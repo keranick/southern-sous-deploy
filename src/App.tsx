@@ -20,7 +20,10 @@ export default function App() {
   const preloaded = usePreload();
   const { play, muted, toggleMute } = useSound(entered);
 
-  useEffect(() => () => { alive.current = false; }, []);
+  useEffect(() => {
+    alive.current = true;
+    return () => { alive.current = false; };
+  }, []);
   const previewRef = useRef<HTMLAudioElement | null>(null);
   const [needTap, setNeedTap] = useState(false);
   useEffect(() => {
