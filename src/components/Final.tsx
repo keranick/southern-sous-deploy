@@ -8,6 +8,11 @@ export function Final({
   onReplay,
   showListen,
   onListen,
+  trackLabel,
+  playing,
+  onToggle,
+  onPrev,
+  onNext,
 }: {
   stage: 'realization' | 'whisper' | 'reveal' | 'release';
   line: string;
@@ -15,6 +20,11 @@ export function Final({
   onReplay: () => void;
   showListen?: boolean;
   onListen?: () => void;
+  trackLabel?: string;
+  playing?: boolean;
+  onToggle?: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 }) {
   if (stage === 'realization' || stage === 'whisper') {
     return (
@@ -53,13 +63,24 @@ export function Final({
             </button>
           )}
           <div style={{ fontSize: 12, color: '#555' }}>релиз: {RELEASE_DATE}</div>
+          <div className="ticker" aria-label={`сейчас играет: ${trackLabel}`}>
+            <div className={`ticker__track${playing ? '' : ' ticker__track--paused'}`}>
+              <span className="ticker__item">{trackLabel}</span>
+              <span className="ticker__item" aria-hidden="true">{trackLabel}</span>
+            </div>
+          </div>
+          <div className="player-controls">
+            <button className="player-btn" onClick={onPrev} aria-label="предыдущий трек">{"<<"}</button>
+            <button className="player-btn" onClick={onToggle} aria-label={playing ? 'пауза' : 'играть'}>{playing ? 'II' : '>'}</button>
+            <button className="player-btn" onClick={onNext} aria-label="следующий трек">{">>"}</button>
+          </div>
           <a
             href={RELEASE_URL}
             target="_blank"
             rel="noreferrer"
             onClick={onPresave}
             className="weird-btn"
-            style={{ textDecoration: 'none', marginTop: 18, display: 'inline-block' }}
+            style={{ textDecoration: 'none', marginTop: 10, display: 'inline-block' }}
           >
             [ ПРЕСЕЙВ ]
           </a>

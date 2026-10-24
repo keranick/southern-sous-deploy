@@ -6,7 +6,7 @@ import { Intro } from './components/Intro';
 import { Eye } from './components/Eye';
 import { Scene } from './components/Scene';
 import { Final } from './components/Final';
-import { PREVIEW_TRACK_URL } from './config';
+import { usePreviewPlayer } from './hooks/usePreviewPlayer';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -19,27 +19,11 @@ export default function App() {
   const alive = useRef(true);
   const preloaded = usePreload();
   const { play, muted, toggleMute } = useSound(entered);
+  const preview = usePreviewPlayer(phase === 'release', muted);
 
   useEffect(() => {
     alive.current = true;
     return () => { alive.current = false; };
-  }, []);
-  const previewRef = useRef<HTMLAudioElement | null>(null);
-  const [needTap, setNeedTap] = useState(false);
-  useEffect(() => {
-    if (phase !== 'release' || !PREVIEW_TRACK_URL) return;
-    // Финал наступает через ~13с после последнего жеста — браузер может
-    // зарубить autoplay. Тогда показываем [ СЛУШАТЬ ], тап = жест = можно.
-    const el = new Audio(PREVIEW_TRACK_URL);
-    previewRef.current = el;
-    el.play().then(() => setNeedTap(false)).catch(() => setNeedTap(true));
-    return () => {
-      el.pause();
-      previewRef.current = null;
-    };
-  }, [phase]);
-  const playPreview = useCallback(() => {
-    previewRef.current?.play().then(() => setNeedTap(false)).catch(() => {});
   }, []);
 
   const enter = useCallback(() => {
@@ -94,10 +78,9 @@ export default function App() {
   }, [phase, fry, cycle, play, runEnding]);
 
   const replay = useCallback(() => {
-    previewRef.current?.pause();
-    setNeedTap(false);
+    preview.reset();
     setCycle(0); setFry('idle'); setLine(''); setPhase('intro');
-  }, []);
+  }, [preview.reset]);
 
   return (
     <>
@@ -119,7 +102,19 @@ export default function App() {
       )}
 
       {(phase === 'whisper' || phase === 'reveal' || phase === 'release') && (
-        <Final stage={phase} line={line} onPresave={() => {}} onReplay={replay} showListen={needTap && phase === 'release'} onListen={playPreview} />
+        <Final
+          stage={phase}
+          line={line}
+          onPresave={() => {}}
+          onReplay={replay}
+          showListen={phase === 'release' && preview.blocked}
+          onListen={preview.play}
+          trackLabel={preview.label}
+          playing={preview.playing}
+          onToggle={preview.toggle}
+          onPrev={preview.prev}
+          onNext={preview.next}
+        />
       )}
 
       {entered && (

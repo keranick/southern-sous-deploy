@@ -68,6 +68,7 @@ src/
     usePointer.ts         # pointer 0..1 + pressed, и для mouse, и для touch
     useSound.ts           # ван-шоты через Howler + эмбиент через Audio-синглтон
     usePreload.ts         # прелоад критических картинок (рука, еда, стол, обложка)
+    usePreviewPlayer.ts   # плейлист превью: play/pause, назад/вперёд, mute
   components/
     Intro.tsx             # чёрный экран: СОУС + [ ВОЙТИ ]
     Eye.tsx               # веки-шторки с кромкой + рандомное моргание 4–9с
@@ -99,6 +100,7 @@ src/
 | `food/sauce.png` | миска соуса, пульсирует пока держишь кусок | |
 | `background/table.png` | стол, 12.5MB | TODO: сжать в webp/avif |
 | `release/cover.jpg` | обложка микстейпа | показывается в финале |
+| `release/preview-tracks/*.mp3` | превью-треки | имя файла = название группы, порядок алфавитный |
 | `sounds/click.wav` | клик «войти» | |
 | `sounds/grab.wav` | взять | |
 | `sounds/dip.wav` | макнуть | |
@@ -117,11 +119,14 @@ export const RELEASE_SUBTITLE = 'ЭМО КОММЬЮНИТИ';
 export const RELEASE_KIND = 'МИКСТЕЙП';
 export const RELEASE_DATE = 'дата: ...';           // строка под CTA
 export const COVER_URL = '/assets/release/cover.jpg';
-export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
+export const PREVIEW_TRACKS = /* все mp3 из assets/release/preview-tracks */;
 ```
 
-Превью-трек: положи mp3 в `public/music/preview.mp3`
-и пропиши путь — заиграет на экране релиза. Пустая строка = тишина.
+Превью: положи mp3 в `assets/release/preview-tracks/` — файл подхватится сам,
+имя файла станет названием группы, порядок — по алфавиту. Трек в финале
+подписывается как `группа - ?????` и крутится бегущей строкой; им управляют
+кнопки `<<`, пауза/играть и `>>`. Копировать в `public/` не нужно: треки
+импортируются через `import.meta.glob`.
 
 ---
 
@@ -144,6 +149,9 @@ export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
 Обложка — любой jpg/png в `public/assets/release/` + путь в `COVER_URL`.
 Не забудь копию в `assets/release/` и запись в `usePreload.ts`.
 
+Треки — просто mp3 в `assets/release/preview-tracks/`, имя файла = группа.
+Новые файлы и `public/` не требуют правок конфига.
+
 ---
 
 ## Звук: почему так
@@ -154,7 +162,8 @@ export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
   через WebAudio/Howler давало визг и наложение инстансов; синглтон
   физически не даёт создать второй поток. Компромисс: микропауза ~50–100мс
   каждые 9.2с вместо бесшовности (`ponytail:`-комментарий в коде).
-- Mute-кнопка (`звук: вкл/выкл`, незаметная, справа внизу) глушит и то, и другое.
+- Mute-кнопка (`звук: вкл/выкл`, незаметная, справа внизу) глушит ван-шоты,
+  эмбиент и превью-треки.
 - Автоплей-политику обходим честно: весь звук стартует после клика «войти».
 
 ---
