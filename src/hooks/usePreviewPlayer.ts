@@ -3,6 +3,7 @@ import { PREVIEW_TRACKS, previewTrackLabel } from '../config';
 
 export function usePreviewPlayer(active: boolean, muted: boolean) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const startedRef = useRef(false);
   const mutedRef = useRef(muted);
   mutedRef.current = muted;
   const [index, setIndex] = useState(0);
@@ -28,9 +29,11 @@ export function usePreviewPlayer(active: boolean, muted: boolean) {
     audio.addEventListener('play', onPlay);
     audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
-    audio.play().catch(() => {
-      if (audioRef.current === audio) setBlocked(true);
-    });
+    if (startedRef.current) {
+      audio.play().catch(() => {
+        if (audioRef.current === audio) setBlocked(true);
+      });
+    }
 
     return () => {
       audioRef.current = null;
@@ -47,6 +50,7 @@ export function usePreviewPlayer(active: boolean, muted: boolean) {
   }, [muted, index, active]);
 
   const play = useCallback(() => {
+    startedRef.current = true;
     audioRef.current?.play().catch(() => setBlocked(true));
   }, []);
 
@@ -63,7 +67,10 @@ export function usePreviewPlayer(active: boolean, muted: boolean) {
 
   const prev = useCallback(() => step(-1), [step]);
   const next = useCallback(() => step(1), [step]);
-  const reset = useCallback(() => setIndex(0), []);
+  const reset = useCallback(() => {
+    startedRef.current = false;
+    setIndex(0);
+  }, []);
 
   return {
     label: PREVIEW_TRACKS[index] ? previewTrackLabel(PREVIEW_TRACKS[index].name) : '',

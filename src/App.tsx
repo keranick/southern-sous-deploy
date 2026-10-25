@@ -19,7 +19,10 @@ export default function App() {
   const alive = useRef(true);
   const preloaded = usePreload();
   const { play, muted, toggleMute } = useSound(entered);
-  const preview = usePreviewPlayer(phase === 'release', muted);
+  const preview = usePreviewPlayer(
+    phase === 'play' || phase === 'reveal' || phase === 'release',
+    muted,
+  );
 
   useEffect(() => {
     alive.current = true;
@@ -30,8 +33,8 @@ export default function App() {
     setEntered(true);
     setTimeout(() => play('click'), 50);
     setPhase('eye-opening');
-    // Пауза 700мс + раскрытие ~1.4с
-    setTimeout(() => { if (alive.current) setPhase('table'); }, 2200);
+    // Раскрытие глаз ~1.4с: не ждём лишнего, иначе клики по картошке глотаются
+    setTimeout(() => { if (alive.current) setPhase('table'); }, 1500);
   }, [play]);
 
   const runEnding = useCallback(async () => {
@@ -46,6 +49,11 @@ export default function App() {
     setPhase('whisper'); setLine('ты тоже не смог остановиться');
     await sleep(1400); if (!alive.current) return;
     for (let i = 0; i < 3; i++) { setLine('ещё.'); await sleep(900); if (!alive.current) return; }
+    setLine('');
+    setPhase('play');
+  }, []);
+
+  const startReveal = useCallback(async () => {
     setPhase('reveal'); setLine('ЮЖНЫЙ СОУС');
     await sleep(1200); if (!alive.current) return;
     setLine('ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ');
@@ -97,16 +105,17 @@ export default function App() {
           {(phase === 'eye-opening' || phase === 'table' || phase === 'no-fries') && (
             <Scene cycle={Math.min(cycle, TOTAL_CYCLES - 1)} fry={fry} searching={phase === 'no-fries'} hasFries={phase !== 'no-fries'} onGrab={grab} onDip={dip} onEat={eat} />
           )}
-          {phase === 'realization' && <Final stage="realization" line={line} onPresave={() => {}} onReplay={replay} />}
+          {(phase === 'realization' || phase === 'eye-closing') && <Final stage="realization" line={line} onPresave={() => {}} onReplay={replay} />}
         </Eye>
       )}
 
-      {(phase === 'whisper' || phase === 'reveal' || phase === 'release') && (
+      {(phase === 'whisper' || phase === 'play' || phase === 'reveal' || phase === 'release') && (
         <Final
           stage={phase}
           line={line}
           onPresave={() => {}}
           onReplay={replay}
+          onPlay={() => { preview.play(); startReveal(); }}
           showListen={phase === 'release' && preview.blocked}
           onListen={preview.play}
           trackLabel={preview.label}

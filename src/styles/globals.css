@@ -38,8 +38,6 @@ button { font-family: inherit; }
 }
 .release-logo {
   width: min(64vw, 300px);
-  aspect-ratio: 8164 / 2614;
-  overflow: hidden;
 }
 .release-logo img {
   display: block;
@@ -108,14 +106,42 @@ button { font-family: inherit; }
   color: var(--accent);
   outline: none;
 }
+.play-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 84px;
+  height: 84px;
+  background: none;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  cursor: pointer;
+}
+.play-gate__icon {
+  font-size: 18px;
+  line-height: 1;
+  margin-left: 0.24em;
+}
+.play-gate:hover, .play-gate:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translate(1px, -1px) skewX(-2deg);
+  outline: 1px dashed var(--dim);
+}
 .hint {
   font-size: 13px;
   letter-spacing: 0.4em;
-  color: var(--dim);
+  color: #d8d3c7;
+  text-shadow: 0 0 10px rgba(232, 228, 218, 0.2);
   text-transform: lowercase;
   animation: flick 3s infinite steps(2);
 }
-@keyframes flick { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes flick { 0%,100% { opacity: 0.8; } 50% { opacity: 1; } }
 .tiny-mute {
   position: fixed;
   right: 10px;
@@ -140,13 +166,11 @@ button { font-family: inherit; }
 }
 .lid-top {
   top: 0;
-  border-bottom: 2px solid #2e2e2e;
-  box-shadow: 0 3px 24px rgba(0, 0, 0, 0.9);
+  transform-origin: top;
 }
 .lid-bottom {
   bottom: 0;
-  border-top: 2px solid #2e2e2e;
-  box-shadow: 0 -3px 24px rgba(0, 0, 0, 0.9);
+  transform-origin: bottom;
 }
 @media (prefers-reduced-motion: reduce) {
   .hint { animation: none; }

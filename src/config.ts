@@ -1,8 +1,8 @@
 export const RELEASE_URL = 'https://band.link/emosous';
 export const RELEASE_SUBTITLE = 'ЭМО КОММЬЮНИТИ';
 export const RELEASE_DATE = '06.11.2026';
-export const COVER_URL = '/assets/release/cover.jpg';
-export const LOGO_URL = '/assets/logo/logo.png';
+export const COVER_URL = '/assets/release/cover.webp';
+export const LOGO_URL = '/assets/logo/logo.webp';
 
 const trackModules = import.meta.glob<string>('../assets/release/preview-tracks/*.mp3', {
   eager: true,

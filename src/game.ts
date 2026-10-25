@@ -6,6 +6,7 @@ export type Phase =
   | 'realization'
   | 'eye-closing'
   | 'whisper'
+  | 'play'
   | 'reveal'
   | 'release';
 

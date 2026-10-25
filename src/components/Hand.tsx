@@ -3,11 +3,11 @@ import { useEffect } from 'react';
 import type { FryState } from '../game';
 
 const IMG: Record<string, string> = {
-  idle: '/assets/hand/idle.png',
-  grabbing: '/assets/hand/grab.png',
-  holding: '/assets/hand/grab.png',
-  dipping: '/assets/hand/dip.png',
-  eating: '/assets/hand/eat.png',
+  idle: '/assets/hand/idle.webp',
+  grabbing: '/assets/hand/grab.webp',
+  holding: '/assets/hand/grab.webp',
+  dipping: '/assets/hand/dip.webp',
+  eating: '/assets/hand/eat.webp',
 };
 
 export function Hand({

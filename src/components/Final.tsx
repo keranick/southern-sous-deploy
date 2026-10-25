@@ -6,6 +6,7 @@ export function Final({
   line,
   onPresave,
   onReplay,
+  onPlay,
   showListen,
   onListen,
   trackLabel,
@@ -14,10 +15,11 @@ export function Final({
   onPrev,
   onNext,
 }: {
-  stage: 'realization' | 'whisper' | 'reveal' | 'release';
+  stage: 'realization' | 'whisper' | 'play' | 'reveal' | 'release';
   line: string;
   onPresave: () => void;
   onReplay: () => void;
+  onPlay?: () => void;
   showListen?: boolean;
   onListen?: () => void;
   trackLabel?: string;
@@ -26,6 +28,23 @@ export function Final({
   onPrev?: () => void;
   onNext?: () => void;
 }) {
+  if (stage === 'play') {
+    return (
+      <div className="mono-center" style={{ zIndex: 40 }}>
+        <motion.button
+          className="play-gate"
+          onClick={onPlay}
+          aria-label="PLAY"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="play-gate__icon" aria-hidden="true">▶</span>
+          <span>PLAY</span>
+        </motion.button>
+      </div>
+    );
+  }
   if (stage === 'realization' || stage === 'whisper') {
     return (
       <div className="mono-center" style={{ zIndex: 40 }}>
