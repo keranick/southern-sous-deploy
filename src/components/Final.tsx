@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { COVER_URL, RELEASE_DATE, RELEASE_KIND, RELEASE_SUBTITLE, RELEASE_TITLE, RELEASE_URL } from '../config';
+import { COVER_URL, LOGO_URL, RELEASE_DATE, RELEASE_SUBTITLE, RELEASE_URL } from '../config';
 
 export function Final({
   stage,
@@ -43,19 +43,18 @@ export function Final({
   return (
     <div className="mono-center" style={{ zIndex: 40, gap: 12 }}>
       <motion.div
-        initial={{ opacity: 0, letterSpacing: '0.1em', filter: 'blur(4px)' }}
-        animate={{ opacity: 1, letterSpacing: '0.3em', filter: 'blur(0px)' }}
+        initial={{ opacity: 0, filter: 'blur(6px)' }}
+        animate={{ opacity: 1, filter: 'blur(0px)' }}
         transition={{ duration: 0.9 }}
-        style={{ fontSize: 30, marginLeft: '0.3em', textAlign: 'center' }}
+        className="release-logo"
       >
-        {RELEASE_TITLE}
+        <img src={LOGO_URL} alt="Южный соус" draggable={false} />
       </motion.div>
       {(stage === 'release' || line.includes('ЭМО')) && (
         <div style={{ letterSpacing: '0.4em', fontSize: 14, color: '#8a867c' }}>{RELEASE_SUBTITLE}</div>
       )}
       {stage === 'release' && (
         <>
-          <div style={{ letterSpacing: '0.4em', fontSize: 14 }}>{RELEASE_KIND}</div>
           <img src={COVER_URL} alt="обложка" draggable={false} style={{ width: 'min(64vw, 300px)', marginTop: 10, filter: 'contrast(1.05)' }} />
           {showListen && (
             <button onClick={onListen} className="weird-btn" style={{ marginTop: 10 }}>

@@ -10,6 +10,7 @@ const FILES = [
   '/assets/food/sauce.png',
   '/assets/background/table.png',
   '/assets/release/cover.jpg',
+  '/assets/logo/logo.png',
 ];
 
 export function usePreload() {

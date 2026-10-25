@@ -8,7 +8,7 @@
 ```text
 СОУС → ВОЙТИ → глаз открывается → возьми → макни → съешь →
 ЕЩЁ ×6 → картошка кончилась → а соус остался → глаз закрывается →
-ты тоже не смог остановиться → ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ / МИКСТЕЙП →
+ты тоже не смог остановиться → лого ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ →
 [ ПРЕСЕЙВ ] → [ ЕЩЁ РАЗ ] → всё сначала
 ```
 
@@ -63,11 +63,11 @@ idle → holding → dipped → eating → idle (следующий цикл)
 src/
   App.tsx                 # state machine, тайминги перехода между фазами
   game.ts                 # Phase, FryState, CYCLE_HINTS, TOTAL_CYCLES
-  config.ts               # RELEASE_URL, дата, обложка, превью-трек
+  config.ts               # RELEASE_URL, дата, обложка, лого, плейлист превью
   hooks/
     usePointer.ts         # pointer 0..1 + pressed, и для mouse, и для touch
     useSound.ts           # ван-шоты через Howler + эмбиент через Audio-синглтон
-    usePreload.ts         # прелоад критических картинок (рука, еда, стол, обложка)
+    usePreload.ts         # прелоад критических картинок (рука, еда, стол, обложка, лого)
     usePreviewPlayer.ts   # плейлист превью: play/pause, назад/вперёд, mute
   components/
     Intro.tsx             # чёрный экран: СОУС + [ ВОЙТИ ]
@@ -100,6 +100,7 @@ src/
 | `food/sauce.png` | миска соуса, пульсирует пока держишь кусок | |
 | `background/table.png` | стол, 12.5MB | TODO: сжать в webp/avif |
 | `release/cover.jpg` | обложка микстейпа | показывается в финале |
+| `logo/logo.png` | лого «Южный соус» | чёрное на прозрачном, в CSS инвертируется и обрезается снизу |
 | `release/preview-tracks/*.mp3` | превью-треки | имя файла = название группы, порядок алфавитный |
 | `sounds/click.wav` | клик «войти» | |
 | `sounds/grab.wav` | взять | |
@@ -114,11 +115,10 @@ src/
 
 ```ts
 export const RELEASE_URL = 'https://...';          // куда ведёт [ ПРЕСЕЙВ ]
-export const RELEASE_TITLE = 'ЮЖНЫЙ СОУС';
 export const RELEASE_SUBTITLE = 'ЭМО КОММЬЮНИТИ';
-export const RELEASE_KIND = 'МИКСТЕЙП';
 export const RELEASE_DATE = 'дата: ...';           // строка под CTA
 export const COVER_URL = '/assets/release/cover.jpg';
+export const LOGO_URL = '/assets/logo/logo.png';
 export const PREVIEW_TRACKS = /* все mp3 из assets/release/preview-tracks */;
 ```
 

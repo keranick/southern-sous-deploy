@@ -36,6 +36,17 @@ button { font-family: inherit; }
   gap: 18px;
   background: #000;
 }
+.release-logo {
+  width: min(64vw, 300px);
+  aspect-ratio: 8164 / 2614;
+  overflow: hidden;
+}
+.release-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: invert(1) brightness(0.92);
+}
 .weird-btn {
   background: none;
   border: 1px solid var(--fg);
