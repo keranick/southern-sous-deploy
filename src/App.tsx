@@ -57,7 +57,6 @@ export default function App() {
     setPhase('reveal'); setLine('ЮЖНЫЙ СОУС');
     await sleep(1200); if (!alive.current) return;
     setLine('ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ');
-    await sleep(1100); if (!alive.current) return;
     setPhase('release');
   }, []);
 
