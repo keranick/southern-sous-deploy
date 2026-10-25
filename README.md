@@ -8,8 +8,8 @@
 ```text
 СОУС → ВОЙТИ → глаз открывается → возьми → макни → съешь →
 ЕЩЁ ×6 → картошка кончилась → а соус остался → глаз закрывается →
-ты тоже не смог остановиться → ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ / МИКСТЕЙП →
-[ ПРЕСЕЙВ ] → [ ЕЩЁ РАЗ ] → всё сначала
+ты тоже не смог остановиться → ещё ×3 → [ PLAY ] → лого ЮЖНЫЙ СОУС /
+ЭМО КОММЬЮНИТИ → [ ПРЕСЕЙВ ] → [ ЕЩЁ РАЗ ] → всё сначала
 ```
 
 Музыка не упоминается до финальной сцены. Так задумано.
@@ -39,7 +39,7 @@ npm run preview  # раздача dist/, http://localhost:4173
 
 ```text
 intro → eye-opening → table → no-fries → realization → eye-closing →
-whisper → reveal → release → (ещё раз) → intro
+whisper → play → reveal → release → (ещё раз) → intro
 ```
 
 Внутри `table` — подсостояние кусочка `FryState`:
@@ -63,11 +63,12 @@ idle → holding → dipped → eating → idle (следующий цикл)
 src/
   App.tsx                 # state machine, тайминги перехода между фазами
   game.ts                 # Phase, FryState, CYCLE_HINTS, TOTAL_CYCLES
-  config.ts               # RELEASE_URL, дата, обложка, превью-трек
+  config.ts               # RELEASE_URL, дата, обложка, лого, плейлист превью
   hooks/
     usePointer.ts         # pointer 0..1 + pressed, и для mouse, и для touch
     useSound.ts           # ван-шоты через Howler + эмбиент через Audio-синглтон
-    usePreload.ts         # прелоад критических картинок (рука, еда, стол, обложка)
+    usePreload.ts         # прелоад критических картинок (рука, еда, стол, обложка, лого)
+    usePreviewPlayer.ts   # плейлист превью: play/pause, назад/вперёд, mute
   components/
     Intro.tsx             # чёрный экран: СОУС + [ ВОЙТИ ]
     Eye.tsx               # веки-шторки с кромкой + рандомное моргание 4–9с
@@ -85,20 +86,22 @@ src/
 
 ## Ассеты
 
-Исходники живут в `assets/`, в браузер едут из `public/assets/`.
-**После добавления/замены файла клади его в обе папки** (или копируй целиком).
+Исходники живут в `assets/`, в браузер едут оптимизированные webp из `public/assets/`.
+**После добавления/замены картинки клади исходник в `assets/`, а webp-версию — в `public/assets/`.**
 
 | Файл | Что это | Примечание |
 |---|---|---|
-| `hand/idle.png` | рука-курсор | |
-| `hand/grab.png` | хват / поиск по столу | |
-| `hand/dip.png` | макание | |
-| `hand/eat.png` | ест (показывается 450мс) | |
-| `food/fries.png` | тарелка, остаётся до конца сюжета | |
-| `food/fries-1pcs.png` | один кусок в руке | |
-| `food/sauce.png` | миска соуса, пульсирует пока держишь кусок | |
-| `background/table.png` | стол, 12.5MB | TODO: сжать в webp/avif |
-| `release/cover.jpg` | обложка микстейпа | показывается в финале |
+| `hand/idle.webp` | рука-курсор | 900 px, ~41 КБ |
+| `hand/grab.webp` | хват / поиск по столу | 900 px, ~34 КБ |
+| `hand/dip.webp` | макание | 900 px, ~32 КБ |
+| `hand/eat.webp` | ест (показывается 450мс) | 900 px, ~47 КБ |
+| `food/fries.webp` | тарелка, остаётся до конца сюжета | ~25 КБ |
+| `food/fries-1pcs.webp` | один кусок в руке | ~9 КБ |
+| `food/sauce.webp` | миска соуса, пульсирует пока держишь кусок | ~21 КБ |
+| `background/table.webp` | стол | 1600×1200, q65, ~400 КБ (было 12.5 МБ png) |
+| `release/cover.webp` | обложка микстейпа | показывается в финале, ~33 КБ |
+| `logo/logo.webp` | лого «Южный соус» | обрезано и 1200 px, чёрное на прозрачном, в CSS инвертируется |
+| `release/preview-tracks/*.mp3` | превью-треки | имя файла = название группы, порядок алфавитный |
 | `sounds/click.wav` | клик «войти» | |
 | `sounds/grab.wav` | взять | |
 | `sounds/dip.wav` | макнуть | |
@@ -112,22 +115,24 @@ src/
 
 ```ts
 export const RELEASE_URL = 'https://...';          // куда ведёт [ ПРЕСЕЙВ ]
-export const RELEASE_TITLE = 'ЮЖНЫЙ СОУС';
 export const RELEASE_SUBTITLE = 'ЭМО КОММЬЮНИТИ';
-export const RELEASE_KIND = 'МИКСТЕЙП';
 export const RELEASE_DATE = 'дата: ...';           // строка под CTA
 export const COVER_URL = '/assets/release/cover.jpg';
-export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
+export const LOGO_URL = '/assets/logo/logo.png';
+export const PREVIEW_TRACKS = /* все mp3 из assets/release/preview-tracks */;
 ```
 
-Превью-трек: положи mp3 в `public/music/preview.mp3`
-и пропиши путь — заиграет на экране релиза. Пустая строка = тишина.
+Превью: положи mp3 в `assets/release/preview-tracks/` — файл подхватится сам,
+имя файла станет названием группы, порядок — по алфавиту. Трек в финале
+подписывается как `группа - ?????` и крутится бегущей строкой; им управляют
+кнопки `<<`, пауза/играть и `>>`. Копировать в `public/` не нужно: треки
+импортируются через `import.meta.glob`.
 
 ---
 
 ## Добавить кадры руки
 
-1. Положи png в `assets/hand/` **и** `public/assets/hand/`.
+1. Положи png-исходник в `assets/hand/`, webp (900 px) — в `public/assets/hand/`.
 2. Добавь путь в `IMG` в `src/components/Hand.tsx`.
 3. Добавь путь в `FILES` в `src/hooks/usePreload.ts`, чтобы кадр
    не мигнул пустотой в первый раз.
@@ -141,8 +146,11 @@ export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
 
 ## Добавить обложку / музыку
 
-Обложка — любой jpg/png в `public/assets/release/` + путь в `COVER_URL`.
-Не забудь копию в `assets/release/` и запись в `usePreload.ts`.
+Обложка — jpg/png-исходник в `assets/release/`, webp (900 px) в
+`public/assets/release/` + путь в `COVER_URL`. Запись в `usePreload.ts` тоже нужна.
+
+Треки — просто mp3 в `assets/release/preview-tracks/`, имя файла = группа.
+Новые файлы и `public/` не требуют правок конфига.
 
 ---
 
@@ -154,8 +162,10 @@ export const PREVIEW_TRACK_URL = '';               // '/music/preview.mp3'
   через WebAudio/Howler давало визг и наложение инстансов; синглтон
   физически не даёт создать второй поток. Компромисс: микропауза ~50–100мс
   каждые 9.2с вместо бесшовности (`ponytail:`-комментарий в коде).
-- Mute-кнопка (`звук: вкл/выкл`, незаметная, справа внизу) глушит и то, и другое.
-- Автоплей-политику обходим честно: весь звук стартует после клика «войти».
+- Mute-кнопка (`звук: вкл/выкл`, незаметная, справа внизу) глушит ван-шоты,
+  эмбиент и превью-треки.
+- Автоплей-политику обходим честно: эмбиент и ван-шоты стартуют после «войти»,
+  превью — после кнопки `PLAY`.
 
 ---
 

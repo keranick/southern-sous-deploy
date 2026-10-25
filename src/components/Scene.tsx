@@ -27,7 +27,7 @@ export function Scene({
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>} className="scene-lock" style={{ cursor: 'none' }}>
       <img
-        src="/assets/background/table.png"
+        src="/assets/background/table.webp"
         alt=""
         draggable={false}
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75) contrast(1.05)' }}
@@ -51,7 +51,7 @@ export function Scene({
             background: 'none', border: 'none', padding: 24, zIndex: 20, cursor: 'none',
           }}
         >
-          <img src="/assets/food/fries.png" alt="картошка" draggable={false} style={{ width: '100%', filter: 'contrast(1.05)' }} />
+          <img src="/assets/food/fries.webp" alt="картошка" draggable={false} style={{ width: '100%', filter: 'contrast(1.05)' }} />
         </motion.button>
       )}
 
@@ -65,7 +65,7 @@ export function Scene({
         }}
       >
         <motion.img
-          src="/assets/food/sauce.png"
+          src="/assets/food/sauce.webp"
           alt="соус"
           draggable={false}
           animate={fry === 'holding' ? { scale: [1, 1.04, 1] } : {}}
@@ -82,7 +82,7 @@ export function Scene({
       {/* один кусок в руке */}
       {(fry === 'holding' || fry === 'dipped') && (
         <img
-          src="/assets/food/fries-1pcs.png"
+          src="/assets/food/fries-1pcs.webp"
           alt=""
           draggable={false}
           style={{
@@ -97,7 +97,7 @@ export function Scene({
       {/* поиск при пустой тарелке: рука бродит сама */}
       {searching ? (
         <motion.img
-          src="/assets/hand/grab.png"
+          src="/assets/hand/grab.webp"
           alt=""
           draggable={false}
           animate={{ x: [-60, 60, -30, 40, 0], y: [0, 24, -12, 10, 0], rotate: [0, -4, 3, -2, 0] }}

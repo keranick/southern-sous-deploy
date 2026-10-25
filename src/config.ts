@@ -1,7 +1,20 @@
-export const RELEASE_URL = 'https://example.com/presave'; // TODO: заменить на реальный пресейв
-export const RELEASE_TITLE = 'ЮЖНЫЙ СОУС';
+export const RELEASE_URL = 'https://band.link/emosous';
 export const RELEASE_SUBTITLE = 'ЭМО КОММЬЮНИТИ';
-export const RELEASE_KIND = 'МИКСТЕЙП';
-export const RELEASE_DATE = 'дата: TBA'; // TODO: заменить дату релиза
-export const COVER_URL = '/assets/release/cover.jpg';
-export const PREVIEW_TRACK_URL = '/assets/release/preview.mp3';
+export const RELEASE_DATE = '06.11.2026';
+export const COVER_URL = '/assets/release/cover.webp';
+export const LOGO_URL = '/assets/logo/logo.webp';
+
+const trackModules = import.meta.glob<string>('../assets/release/preview-tracks/*.mp3', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
+export const PREVIEW_TRACKS = Object.entries(trackModules)
+  .map(([path, url]) => ({
+    name: decodeURIComponent(path.split('/').pop()!.replace(/\.mp3$/i, '')),
+    url,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+
+export const previewTrackLabel = (name: string) => `${name} - ?????`;

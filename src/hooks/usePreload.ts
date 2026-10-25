@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 
 const FILES = [
-  '/assets/hand/idle.png',
-  '/assets/hand/grab.png',
-  '/assets/hand/dip.png',
-  '/assets/hand/eat.png',
-  '/assets/food/fries.png',
-  '/assets/food/fries-1pcs.png',
-  '/assets/food/sauce.png',
-  '/assets/background/table.png',
-  '/assets/release/cover.jpg',
+  '/assets/hand/idle.webp',
+  '/assets/hand/grab.webp',
+  '/assets/hand/dip.webp',
+  '/assets/hand/eat.webp',
+  '/assets/food/fries.webp',
+  '/assets/food/fries-1pcs.webp',
+  '/assets/food/sauce.webp',
+  '/assets/background/table.webp',
+  '/assets/release/cover.webp',
+  '/assets/logo/logo.webp',
 ];
 
 export function usePreload() {

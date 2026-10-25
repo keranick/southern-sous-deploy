@@ -6,7 +6,7 @@ import { Intro } from './components/Intro';
 import { Eye } from './components/Eye';
 import { Scene } from './components/Scene';
 import { Final } from './components/Final';
-import { PREVIEW_TRACK_URL } from './config';
+import { usePreviewPlayer } from './hooks/usePreviewPlayer';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -19,32 +19,22 @@ export default function App() {
   const alive = useRef(true);
   const preloaded = usePreload();
   const { play, muted, toggleMute } = useSound(entered);
+  const preview = usePreviewPlayer(
+    phase === 'play' || phase === 'reveal' || phase === 'release',
+    muted,
+  );
 
-  useEffect(() => () => { alive.current = false; }, []);
-  const previewRef = useRef<HTMLAudioElement | null>(null);
-  const [needTap, setNeedTap] = useState(false);
   useEffect(() => {
-    if (phase !== 'release' || !PREVIEW_TRACK_URL) return;
-    // Финал наступает через ~13с после последнего жеста — браузер может
-    // зарубить autoplay. Тогда показываем [ СЛУШАТЬ ], тап = жест = можно.
-    const el = new Audio(PREVIEW_TRACK_URL);
-    previewRef.current = el;
-    el.play().then(() => setNeedTap(false)).catch(() => setNeedTap(true));
-    return () => {
-      el.pause();
-      previewRef.current = null;
-    };
-  }, [phase]);
-  const playPreview = useCallback(() => {
-    previewRef.current?.play().then(() => setNeedTap(false)).catch(() => {});
+    alive.current = true;
+    return () => { alive.current = false; };
   }, []);
 
   const enter = useCallback(() => {
     setEntered(true);
     setTimeout(() => play('click'), 50);
     setPhase('eye-opening');
-    // Пауза 700мс + раскрытие ~1.4с
-    setTimeout(() => { if (alive.current) setPhase('table'); }, 2200);
+    // Раскрытие глаз ~1.4с: не ждём лишнего, иначе клики по картошке глотаются
+    setTimeout(() => { if (alive.current) setPhase('table'); }, 1500);
   }, [play]);
 
   const runEnding = useCallback(async () => {
@@ -59,6 +49,11 @@ export default function App() {
     setPhase('whisper'); setLine('ты тоже не смог остановиться');
     await sleep(1400); if (!alive.current) return;
     for (let i = 0; i < 3; i++) { setLine('ещё.'); await sleep(900); if (!alive.current) return; }
+    setLine('');
+    setPhase('play');
+  }, []);
+
+  const startReveal = useCallback(async () => {
     setPhase('reveal'); setLine('ЮЖНЫЙ СОУС');
     await sleep(1200); if (!alive.current) return;
     setLine('ЮЖНЫЙ СОУС / ЭМО КОММЬЮНИТИ');
@@ -91,10 +86,9 @@ export default function App() {
   }, [phase, fry, cycle, play, runEnding]);
 
   const replay = useCallback(() => {
-    previewRef.current?.pause();
-    setNeedTap(false);
+    preview.reset();
     setCycle(0); setFry('idle'); setLine(''); setPhase('intro');
-  }, []);
+  }, [preview.reset]);
 
   return (
     <>
@@ -111,12 +105,25 @@ export default function App() {
           {(phase === 'eye-opening' || phase === 'table' || phase === 'no-fries') && (
             <Scene cycle={Math.min(cycle, TOTAL_CYCLES - 1)} fry={fry} searching={phase === 'no-fries'} hasFries={phase !== 'no-fries'} onGrab={grab} onDip={dip} onEat={eat} />
           )}
-          {phase === 'realization' && <Final stage="realization" line={line} onPresave={() => {}} onReplay={replay} />}
+          {(phase === 'realization' || phase === 'eye-closing') && <Final stage="realization" line={line} onPresave={() => {}} onReplay={replay} />}
         </Eye>
       )}
 
-      {(phase === 'whisper' || phase === 'reveal' || phase === 'release') && (
-        <Final stage={phase} line={line} onPresave={() => {}} onReplay={replay} showListen={needTap && phase === 'release'} onListen={playPreview} />
+      {(phase === 'whisper' || phase === 'play' || phase === 'reveal' || phase === 'release') && (
+        <Final
+          stage={phase}
+          line={line}
+          onPresave={() => {}}
+          onReplay={replay}
+          onPlay={() => { preview.play(); startReveal(); }}
+          showListen={phase === 'release' && preview.blocked}
+          onListen={preview.play}
+          trackLabel={preview.label}
+          playing={preview.playing}
+          onToggle={preview.toggle}
+          onPrev={preview.prev}
+          onNext={preview.next}
+        />
       )}
 
       {entered && (
