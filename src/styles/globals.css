@@ -140,6 +140,7 @@ button { font-family: inherit; }
   text-shadow: 0 0 10px rgba(232, 228, 218, 0.2);
   text-transform: lowercase;
   animation: flick 3s infinite steps(2);
+  pointer-events: none;
 }
 @keyframes flick { 0%,100% { opacity: 0.8; } 50% { opacity: 1; } }
 .tiny-mute {

@@ -37,7 +37,7 @@ export function Scene({
       <button
         aria-label="съесть"
         onPointerDown={onEat}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '18%', background: 'transparent', border: 'none', zIndex: 20 }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '32%', background: 'transparent', border: 'none', zIndex: 20 }}
       />
 
       {/* тарелка: остаётся, пока по сюжету не закончится */}
